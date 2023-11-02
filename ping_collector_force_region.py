@@ -209,6 +209,11 @@ def main(region_to_test):
         print(f"  - Results saved to {file_name}\n")
         print_stats(results)  # Print statistics for the main check
     else:
+        print("\nError:")
+        print(f"  - Specified region '{region_to_test}' is not valid or not provided.\n")
+        print("Please specify a valid region from the following list:")
+        for region in regions:
+            print(f"  - {region}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Ping Collector Script')
