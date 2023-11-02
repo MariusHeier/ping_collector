@@ -3,6 +3,8 @@
 ## Introduction
 Ever wondered if what you know about input lag is slightly off the mark? Well, it might be. I'm crafting a simulator that capitalizes on actual ping data collected from users over a span of roughly 10 minutes. This simulator aims to power a website where you can experiment with different controllers or mice to see if their input lag is significant enough to affect response times during gameplay. Picture this: two players firing at each other at the exact same moment—the one with the lower ping should win, right? However, the truth is a tad more nuanced. To shed light on this, I need your help to gather a robust set of data.
 
+![Command Line Readout](cmd_readout.jpg)
+
 ## Data Collection
 This tool is designed to measure your ping to the closest Fortnite server, continuously pinging it for 10 minutes. The data is then saved in a log file and sent to me. To prevent server overload, if the tool is used multiple times within an hour, it will refrain from sending the data.
 
