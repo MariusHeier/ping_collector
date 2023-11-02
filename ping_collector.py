@@ -208,7 +208,7 @@ def main():
         print(f"\nResults Summary:")
         print(f"  - All results saved to {file_name}")
         print(f"  - Best region: {best_region}\n")
-        print(print_stats(results))  # Print statistics for the main check
+        print_stats(results)  # Print statistics for the main check
         # Get only the current hour
         current_hour = time.strftime("%H")
 
