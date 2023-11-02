@@ -172,7 +172,7 @@ def save_results_to_file(all_results, file_name):
 
 
 
-def main(region_to_test):
+def main(region_to_test, duration_minutes):
     regions = {
         "NA-East": "ping-nae.ds.on.epicgames.com",
         "NA-Central": "ping-nac.ds.on.epicgames.com",
