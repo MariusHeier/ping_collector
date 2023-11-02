@@ -160,7 +160,37 @@ def find_best_region(regions, sample_size, all_results):
                 min_avg_ping = avg_ping
                 best_region = region
     return best_region
+def send_file(file_path):
+    host = '0a6ejoevl3.execute-api.us-east-1.amazonaws.com'
+    endpoint = '/prod/ping'
 
+    # Read file contents
+    with open(file_path, 'r') as file:
+        file_content = file.read()
+
+    # Setup connection
+    connection = http.client.HTTPSConnection(host)
+
+    # Headers
+    headers = {'Content-type': 'application/text'}
+
+    # Send POST request
+    connection.request('POST', endpoint, body=file_content, headers=headers)
+
+    # Get the response
+    response = connection.getresponse()
+    response_data = response.read()
+    response_json = json.loads(response_data)
+
+    # Check the response
+    if response.status == 200:
+        if "joke" in response_json:
+            print("Data sent to Marius, Marius is happy")
+            print(response_json["joke"])
+        else:
+            print("Received a response without a joke.")
+    else:
+        print("That didn't work, Marius don't worry, Marius probably don't need more data")
 
 def save_results_to_file(all_results, file_name):
     with open(file_name, 'w') as file:
@@ -172,7 +202,7 @@ def save_results_to_file(all_results, file_name):
 
 
 
-def main(region_to_test, duration_minutes):
+def main(duration_minutes, test_all):
     regions = {
         "NA-East": "ping-nae.ds.on.epicgames.com",
         "NA-Central": "ping-nac.ds.on.epicgames.com",
@@ -183,41 +213,38 @@ def main(region_to_test, duration_minutes):
         "Asia": "ping-asia.ds.on.epicgames.com"
     }
     sample_size = 10
-    all_results = {}
-    
-    # If a specific region is specified, we only test that region
-    if region_to_test and region_to_test in regions:
-        print(f"Testing specified region: {region_to_test}")
-        host = regions[region_to_test]
-        results, frequency = ping_server(host, sample_size)
-        all_results = {region_to_test: results}  # Store results for specified region
-        
-        # Calculate approximate sample size for the desired duration
-        approx_sample_size = int(frequency * 60 * duration_minutes)
-        print(f"Pinging {region_to_test} for an approximate duration of {duration_minutes} minutes...")
-        print(f"  - Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        
-        results, _ = ping_server(host, approx_sample_size)
-        all_results[region_to_test] = results  # Store the main check results
-        
-        # Store the results in a file
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_name = f"ping_results_{region_to_test}_{timestamp}.txt"
-        save_results_to_file(all_results, file_name)
-        
-        print(f"\nResults Summary:")
-        print(f"  - Results saved to {file_name}\n")
-        print_stats(results)  # Print statistics for the main check
-    else:
-        print("\nError:")
-        print(f"  - Specified region '{region_to_test}' is not valid or not provided.\n")
-        print("Please specify a valid region from the following list:")
-        for region in regions:
-            print(f"  - {region}")
+
+    for region, host in regions.items():
+        if test_all or region == test_all:
+            print(f"Testing region: {region}")
+            results, frequency = ping_server(host, sample_size)
+            all_results = {region: results}  # Store results for the region
+            
+            # Calculate approximate sample size for the desired duration
+            approx_sample_size = int(frequency * 60 * duration_minutes)
+            print(f"Pinging {region} for an approximate duration of {duration_minutes} minutes...")
+            print(f"  - Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            
+            results, _ = ping_server(host, approx_sample_size)
+            all_results[region] = results  # Store the main check results
+            
+            # Store the results in a file
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            file_name = f"ping_results_{region}_{timestamp}.txt"
+            save_results_to_file(all_results, file_name)
+            
+            print(f"\nResults Summary:")
+            print(f"  - Results saved to {file_name}\n")
+            print_stats(results)  # Print statistics for the main check
+
+            # Send the file to the server
+            send_file(file_name)
+
+            print(f"Finished testing {region}\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Ping Collector Script')
-    parser.add_argument('-r', '--region', type=str, help='Specify the region to test. Available regions: NA-East, NA-Central, NA-West, Europe, Oceania, Brazil, Asia')
     parser.add_argument('-t', '--time', type=int, default=10, help='Duration for the ping test in minutes. Default is 10 minutes.')
+    parser.add_argument('-a', '--all', action='store_true', help='Test all regions one by one.')
     args = parser.parse_args()
-    main(region_to_test=args.region, duration_minutes=args.time)
+    main(duration_minutes=args.time, test_all=args.all)
