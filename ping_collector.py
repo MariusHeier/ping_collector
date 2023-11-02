@@ -80,7 +80,7 @@ def send_file(file_path):
     # Check the response
     if response.status == 200:
         if "joke" in response_json:
-            print("Deta sent to Marius, Marius is happy")
+            print("Data sent to Marius, Marius is happy")
             print(response_json["joke"])
         else:
             print("Received a response without a joke.")
@@ -184,7 +184,7 @@ def main():
     }
     sample_size = 10
     duration_minutes = 10  # Duration for the main check in minutes
-    slack_minutes = 2  # Slack time for network fluctuations
+    slack_minutes = 4  # Slack time for network fluctuations
     all_results = {}  # Dictionary to store all results
     print("Finding lowest ping server...")
     best_region = find_best_region(regions, sample_size, all_results)
