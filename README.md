@@ -7,16 +7,25 @@ Ever wondered if what you know about input lag is slightly off the mark? Well, i
 This tool is designed to measure your ping to the closest Fortnite server, continuously pinging it for 10 minutes. The data is then saved in a log file and sent to me. To prevent server overload, if the tool is used multiple times within an hour, it will refrain from sending the data.
 
 The data shared will look like this:
-Region: NA-East
-Sent: 2023-11-02 17:55:14.823678, Received: 2023-11-02 17:55:14.976255
-Sent: 2023-11-02 17:55:14.976778, Received: 2023-11-02 17:55:15.101085
+- Region: NA-East
+- Sent: 2023-11-02 17:55:14.823678, Received: 2023-11-02 17:55:14.976255
+- Sent: 2023-11-02 17:55:14.976778, Received: 2023-11-02 17:55:15.101085
 
 Please note that no personal information is stored in these files, just the timestamps for pings.
 
 As a token of appreciation, every time you submit a log, you'll receive a random ping-related joke to lighten up your day!
 
-## Usage
-If you're hesitant about running the .exe file, and you're conversant with Python, feel free to run the Python version instead.
+## Running the Application
+
+### Windows Executable:
+For Windows users, an executable `.exe` version is provided for convenience. Simply download and run it.
+
+**Note:** Your antivirus might flag the `.exe` file initially because it’s an unrecognized application. This is a standard precautionary measure. Rest assured, the file is safe to use.
+
+### Python Script:
+Prefer not to run an executable file? Then you probably know how to run it with Python.
+
+python ping_collector.py
 
 ## Longevity
 This tool will remain operational even after my data collection phase ends, though it will be available for just a few days. I sincerely thank you for your contribution.

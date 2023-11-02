@@ -204,9 +204,7 @@ def main():
         results, _ = ping_server(regions[best_region], approx_sample_size)
         all_results[best_region] = results  # Store the main check results
         
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_name = f"ping_results_{timestamp}.txt"
-        save_results_to_file(all_results, file_name)  # Save all results
+
         print(f"\nResults Summary:")
         print(f"  - All results saved to {file_name}")
         print(f"  - Best region: {best_region}\n")
@@ -225,6 +223,12 @@ def main():
                 break
             else:
                 log_file_exists = False
+                
+        # Store the results in a file
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_name = f"ping_results_{timestamp}.txt"
+        save_results_to_file(all_results, file_name)  # Save all results
+        
         if log_file_exists:
             print(f"Marius did not need this log file, because it was within the same hour.")
             print("If you want another joke, wait until the next hour.")
