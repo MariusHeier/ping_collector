@@ -9,8 +9,8 @@ import os
 import time
 
 def print_stats(data):
-    # Convert the ping results to seconds
-    ping_times = [(received_time - sent_time).total_seconds() for sent_time, received_time in data]
+    # Convert the ping results to milliseconds
+    ping_times = [(received_time - sent_time).total_seconds() * 1000 for sent_time, received_time in data]
     
     # Calculate the statistics
     max_ping = max(ping_times)
@@ -23,13 +23,13 @@ def print_stats(data):
     iqr = q3 - q1  # Interquartile Range
     
     # Print the statistics
-    print("Ping Statistics for Main Test:")
-    print(f"Max Ping: {max_ping:.3f} seconds")
-    print(f"Min Ping: {min_ping:.3f} seconds")
-    print(f"Average Ping: {avg_ping:.3f} seconds")
-    print(f"Median Ping: {median_ping:.3f} seconds")
-    print(f"Standard Deviation: {std_dev_ping:.3f} seconds")
-    print(f"Interquartile Range: {iqr:.3f} seconds")
+    print("\nPing Statistics for Main Test:")
+    print(f"  - Max Ping: {max_ping:.2f} milliseconds")
+    print(f"  - Min Ping: {min_ping:.2f} milliseconds")
+    print(f"  - Average Ping: {avg_ping:.2f} milliseconds")
+    print(f"  - Median Ping: {median_ping:.2f} milliseconds")
+    print(f"  - Standard Deviation: {std_dev_ping:.2f} milliseconds")
+    print(f"  - Interquartile Range: {iqr:.2f} milliseconds\n")
 
 
 def checksum(source_string):
@@ -80,6 +80,7 @@ def send_file(file_path):
     # Check the response
     if response.status == 200:
         if "joke" in response_json:
+            print("Deta sent to Marius, Marius is happy")
             print(response_json["joke"])
         else:
             print("Received a response without a joke.")
@@ -181,22 +182,24 @@ def main():
         "Asia": "ping-asia.ds.on.epicgames.com"
     }
     sample_size = 10
-    duration_minutes = 0.1  # Duration for the main check in minutes
+    duration_minutes = 10  # Duration for the main check in minutes
     all_results = {}  # Dictionary to store all results
-
+    print("Finding lowest ping server...")
     best_region = find_best_region(regions, sample_size, all_results)
     if best_region is not None:
-        print(f"The best region is {best_region} with the lowest average ping.")
+        print("\nBest Region Analysis:")
+        print(f"  - The best region is {best_region} with the lowest average ping.")
         _, frequency = ping_server(regions[best_region], sample_size)
+        print(f"  - Approximate frequency: {frequency:.2f} pings/sec\n")
         
         # Calculate approximate sample size for the desired duration
         approx_sample_size = int(frequency * 60 * duration_minutes)
         start_time = datetime.now()
         estimated_end_time = start_time + timedelta(minutes=duration_minutes)
         print(f"Pinging {best_region} for an approximate duration of {duration_minutes} minutes...")
-        print("Dont do anything, but if you wanne cancel, you can with ctrl+c")
-        print(f"Start time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"Estimated end time: {estimated_end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print("Don't do anything, but if you want to cancel, you can with Ctrl+C")
+        print(f"  - Start time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"  - Estimated end time: {estimated_end_time.strftime('%Y-%m-%d %H:%M:%S')}\n")
         
         results, _ = ping_server(regions[best_region], approx_sample_size)
         all_results[best_region] = results  # Store the main check results
@@ -204,23 +207,27 @@ def main():
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         file_name = f"ping_results_{timestamp}.txt"
         save_results_to_file(all_results, file_name)  # Save all results
-        print(f"All results saved to {file_name}")
-        # After ping tests, send the file to the jokeendpoint
-        current_hour_timestamp = time.strftime("%Y%m%d%H")
-        
+        print(f"\nResults Summary:")
+        print(f"  - All results saved to {file_name}")
+        print(f"  - Best region: {best_region}\n")
+        print(print_stats(results))  # Print statistics for the main check
+        # Get only the current hour
+        current_hour = time.strftime("%H")
+
         # Check for existing log files with the same format
         log_files = [f for f in os.listdir() if f.endswith('.txt') and 'ping_results' in f]
 
         # Check if any log file for the current hour already exists
-        log_file_exists = any(current_hour_timestamp in file_name for file_name in log_files)
-
+        log_file_exists = any(current_hour in file_name for file_name in log_files)
         if log_file_exists:
             print(f"Marius did not need this log file, because it was within the same hour.")
+            print("If you want another joke, wait until the next hour.")
         else:
             send_file(file_name)
-    else:
-        print("Could not determine the best region due to ping failures.")
 
+    else:
+        print("\nError:")
+        print("  - Could not determine the best region due to ping failures.\n")
 
 if __name__ == "__main__":
     main()
