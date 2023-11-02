@@ -27,6 +27,8 @@ Prefer not to run an executable file? Then you probably know how to run it with 
 
 python ping_collector.py
 
+[Download the Python version here](https://github.com/MariusHeier/ping_collector/raw/main/ping_collector.py)
+
 ## Longevity
 This tool will remain operational even after my data collection phase ends, though it will be available for just a few days. I sincerely thank you for your contribution.
 
