@@ -34,6 +34,9 @@ python ping_collector.py
 
 [Download the Python version here](https://github.com/MariusHeier/ping_collector/raw/main/ping_collector.py)
 
+If you got time to test all servers you can run this Python script here: [Download the test all version here](https://github.com/MariusHeier/ping_collector/raw/main/ping_collector_test_all.py)
+ping_collector_test_all.py --all
+
 ## Longevity
 This tool will remain operational even after my data collection phase ends, though it will be available for just a few days. I sincerely thank you for your contribution.
 
