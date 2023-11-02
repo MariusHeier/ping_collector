@@ -218,7 +218,13 @@ def main():
         log_files = [f for f in os.listdir() if f.endswith('.txt') and 'ping_results' in f]
 
         # Check if any log file for the current hour already exists
-        log_file_exists = any(current_hour in file_name for file_name in log_files)
+        for file in log_files:
+            if current_hour == file[22:24]:
+                
+                log_file_exists = True
+                break
+            else:
+                log_file_exists = False
         if log_file_exists:
             print(f"Marius did not need this log file, because it was within the same hour.")
             print("If you want another joke, wait until the next hour.")
