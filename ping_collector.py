@@ -104,6 +104,7 @@ def ping(host):
     icmp = socket.getprotobyname("icmp")
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVTIMEO, struct.pack("ll", 2, 0))  # Timeout of 2 seconds
     except socket.error as e:
         if e.errno == 1:
             e.msg += " - Note that ICMP messages can only be sent from processes running as root."
@@ -118,9 +119,9 @@ def ping(host):
     sock.sendto(packet, (host, 1))
     
     while True:
-        ready = select.select([sock], [], [], 1)
+        ready = select.select([sock], [], [], 2)
         if ready[0] == []:
-            return None
+            return None  # If timeout occurs, return None
 
         time_received = datetime.now()
         rec_packet, addr = sock.recvfrom(1024)
@@ -183,6 +184,7 @@ def main():
     }
     sample_size = 10
     duration_minutes = 10  # Duration for the main check in minutes
+    slack_minutes = 2  # Slack time for network fluctuations
     all_results = {}  # Dictionary to store all results
     print("Finding lowest ping server...")
     best_region = find_best_region(regions, sample_size, all_results)
@@ -196,38 +198,32 @@ def main():
         approx_sample_size = int(frequency * 60 * duration_minutes)
         start_time = datetime.now()
         estimated_end_time = start_time + timedelta(minutes=duration_minutes)
+        estimated_end_time_min = estimated_end_time - timedelta(minutes=slack_minutes)
+        estimated_end_time_max = estimated_end_time + timedelta(minutes=slack_minutes)
         print(f"Pinging {best_region} for an approximate duration of {duration_minutes} minutes...")
         print("Don't do anything, but if you want to cancel, you can with Ctrl+C")
         print(f"  - Start time: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"  - Estimated end time: {estimated_end_time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+        print(f"  - Estimated end time: Between {estimated_end_time_min.strftime('%Y-%m-%d %H:%M')} and {estimated_end_time_max.strftime('%Y-%m-%d %H:%M')}\n")
         
         results, _ = ping_server(regions[best_region], approx_sample_size)
         all_results[best_region] = results  # Store the main check results
         
-
-        print(f"\nResults Summary:")
-        print(f"  - All results saved to {file_name}")
-        print(f"  - Best region: {best_region}\n")
-        print_stats(results)  # Print statistics for the main check
-        # Get only the current hour
-        current_hour = time.strftime("%H")
-
-        # Check for existing log files with the same format
-        log_files = [f for f in os.listdir() if f.endswith('.txt') and 'ping_results' in f]
-
         # Check if any log file for the current hour already exists
-        for file in log_files:
-            if current_hour == file[22:24]:
-                
-                log_file_exists = True
-                break
-            else:
-                log_file_exists = False
-                
+        current_hour = time.strftime("%H")
+        log_file_exists = any(
+            current_hour == file[22:24] and file.endswith('.txt') and 'ping_results' in file
+            for file in os.listdir()
+        )
+
         # Store the results in a file
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         file_name = f"ping_results_{timestamp}.txt"
         save_results_to_file(all_results, file_name)  # Save all results
+        
+        print(f"\nResults Summary:")
+        print(f"  - All results saved to {file_name}")
+        print(f"  - Best region: {best_region}\n")
+        print_stats(results)  # Print statistics for the main check
         
         if log_file_exists:
             print(f"Marius did not need this log file, because it was within the same hour.")
