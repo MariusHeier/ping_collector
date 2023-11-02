@@ -13,7 +13,6 @@ Sent: 2023-11-02 17:55:14.976778, Received: 2023-11-02 17:55:15.101085
 
 Please note that no personal information is stored in these files, just the timestamps for pings.
 
-## Incentive
 As a token of appreciation, every time you submit a log, you'll receive a random ping-related joke to lighten up your day!
 
 ## Usage
