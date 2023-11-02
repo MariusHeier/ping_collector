@@ -18,7 +18,7 @@ As a token of appreciation, every time you submit a log, you'll receive a random
 ## Running the Application
 
 ### Windows Executable:
-For Windows users, an executable `.exe` version is provided for convenience. Simply download and run it.
+For Windows users, an executable `.exe` version is provided for convenience. [Download the executable here](URL_to_direct_download).
 
 **Note:** Your antivirus might flag the `.exe` file initially because it’s an unrecognized application. This is a standard precautionary measure. Rest assured, the file is safe to use.
 
